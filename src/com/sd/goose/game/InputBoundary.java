@@ -1,4 +1,4 @@
-package com.sd.goose;
+package com.sd.goose.game;
 
 public interface InputBoundary {
 

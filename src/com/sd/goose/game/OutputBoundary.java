@@ -1,4 +1,6 @@
-package com.sd.goose;
+package com.sd.goose.game;
+
+import java.util.List;
 
 public interface OutputBoundary {
     void roll(String player, int first, int second);
@@ -7,6 +9,8 @@ public interface OutputBoundary {
     void bounce(String player, Tile target);
     void bridge(String player, Tile target);
     void win(String player);
+    void finalizeMove();
+    void players(List<String> players);
 
     interface Tile {
         TileType type();

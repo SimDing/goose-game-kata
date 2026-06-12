@@ -1,14 +1,14 @@
-package com.sd.goose;
+package com.sd.goose.game;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.sd.goose.OutputBoundary.Tile;
+import com.sd.goose.game.OutputBoundary.Tile;
 
 public class GooseGame implements InputBoundary {
-    private static final int STARTING_TILE = 1;
+    private static final int STARTING_TILE = 0;
     private static final int BRIDGE_START = 6;
     private static final int BRIDGE_END = 12;
     private static final int GOAL = 63;
@@ -26,6 +26,7 @@ public class GooseGame implements InputBoundary {
     public void addPlayer(String name) {
         players.add(name);
         positions.add(STARTING_TILE);
+        output.players(players);
     }
 
     @Override
@@ -38,7 +39,9 @@ public class GooseGame implements InputBoundary {
         int index = getPlayerIndex(player);
         output.roll(player, roll.first(), roll.second());
 
-        int result = roll.sum() + positions.get(index);
+        int from = positions.get(index);
+        int result = roll.sum() + from;
+        output.move(player, createTileOutput(from), createTileOutput(result));
 
         if (result == BRIDGE_START) {
             result = BRIDGE_END;
@@ -52,7 +55,7 @@ public class GooseGame implements InputBoundary {
 
         if (result > GOAL) {
             int overshoot = result - GOAL;
-            result -= overshoot;
+            result -= overshoot * 2;
             output.bounce(player, createTileOutput(result));
         }
 
@@ -61,6 +64,7 @@ public class GooseGame implements InputBoundary {
         }
 
         positions.set(index, result);
+        output.finalizeMove();
     }
 
     public int getPosition(String player) {
@@ -76,6 +80,10 @@ public class GooseGame implements InputBoundary {
         return index;
     }
 
+    private boolean isStartTile(int position) {
+        return position == STARTING_TILE;
+    }
+
     private boolean isBridgeTile(int position) {
         return position == BRIDGE_START;
     }
@@ -85,6 +93,7 @@ public class GooseGame implements InputBoundary {
     }
 
     private TileOutput createTileOutput(int position) {
+        if (isStartTile(position)) return TileOutput.start();
         if (isBridgeTile(position)) return TileOutput.bridge(position);
         if (isGooseTile(position)) return TileOutput.goose(position);
         return TileOutput.normal(position);
@@ -101,6 +110,10 @@ public class GooseGame implements InputBoundary {
 
         public static TileOutput normal(int position) {
             return new TileOutput(TileType.Normal, position);
+        }
+
+        public static TileOutput start() {
+            return new TileOutput(TileType.Start, 0);
         }
     }
 
