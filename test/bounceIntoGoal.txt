@@ -1,0 +1,8 @@
+add player Pippo
+players: Pippo
+move Pippo 1,59
+Pippo rolls 1, 59. Pippo moves from Start to 60
+move Pippo 3, 2
+Pippo rolls 3, 2. Pippo moves from 60 to 63. Pippo bounces! Pippo returns to 61
+move Pippo 1,1
+Pippo rolls 1, 1. Pippo moves from 61 to 63. Pippo Wins!!

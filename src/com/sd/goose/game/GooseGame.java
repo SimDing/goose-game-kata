@@ -93,6 +93,7 @@ public class GooseGame implements InputBoundary {
     }
 
     private TileOutput createTileOutput(int position) {
+        position = Math.min(position, GOAL);
         if (isStartTile(position)) return TileOutput.start();
         if (isBridgeTile(position)) return TileOutput.bridge(position);
         if (isGooseTile(position)) return TileOutput.goose(position);
