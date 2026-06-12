@@ -1,5 +1,6 @@
 add player Pippo
 players: Pippo
+# Restricting the moves to valid dice rolls was not part of the kata
 move Pippo 1,59
 Pippo rolls 1, 59. Pippo moves from Start to 60
 move Pippo 3, 2
