@@ -1,5 +1,6 @@
 package com.sd.goose.io;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,14 +10,23 @@ import com.sd.goose.game.TileType;
 public class GoosePresenter implements OutputBoundary {
 
     private StringBuilder currentLine = new StringBuilder();
+    private final PrintStream out;
+
+    public GoosePresenter() {
+        this(System.out);
+    }
+
+    public GoosePresenter(PrintStream out) {
+        this.out = out;
+    }
 
     public void invalidName(String name) {
-        System.out.println("Unkown player: " + name);
+        out.println("Unkown player: " + name);
     }
 
     @Override
     public void finalizeMove() {
-        System.out.println(currentLine.toString());
+        out.println(currentLine.toString());
         currentLine = new StringBuilder();
     }
 
@@ -26,7 +36,7 @@ public class GoosePresenter implements OutputBoundary {
 
     @Override
     public void players(List<String> players) {
-        System.out.println("players: " + players.stream().collect(Collectors.joining(", ")));
+        out.println("players: " + players.stream().collect(Collectors.joining(", ")));
     }
 
     @Override

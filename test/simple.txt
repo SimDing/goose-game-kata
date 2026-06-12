@@ -1,0 +1,7 @@
+# Two players and The Bridge
+add player Pippo
+players: Pippo
+add player Pluto
+players: Pippo, Pluto
+move Pippo 4, 2
+Pippo rolls 4, 2. Pippo moves from Start to The Bridge. Pippo jumps to 12
