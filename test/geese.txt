@@ -1,0 +1,9 @@
+# Test running into many geese 
+add player GeeseStomper
+players: GeeseStomper
+move GeeseStomper 1,3
+GeeseStomper rolls 1, 3. GeeseStomper moves from Start to 4
+move GeeseStomper 4,1
+GeeseStomper rolls 4, 1. GeeseStomper moves from 4 to 9, The Goose. GeeseStomper moves again to 14, The Goose. GeeseStomper moves again to 19
+move GeeseStomper 2,2
+GeeseStomper rolls 2, 2. GeeseStomper moves from 19 to 23, The Goose. GeeseStomper moves again to 27, The Goose. GeeseStomper moves again to 31

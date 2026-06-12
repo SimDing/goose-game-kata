@@ -71,8 +71,7 @@ public class GoosePresenter implements OutputBoundary {
     @Override
     public void moveAgain(String player, Tile target) {
         addTerminalDot();
-        currentLine.append(' ')
-                .append(player)
+        currentLine.append(player)
                 .append(" moves again to ")
                 .append(printTile(target));
     }
