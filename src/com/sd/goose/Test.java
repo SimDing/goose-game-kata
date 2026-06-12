@@ -18,9 +18,8 @@ public class Test {
 
     private static final Path TEST_DIR = Path.of("test");
 
-    PrintStream out;
-    GooseController controller;
-    ByteArrayOutputStream outputBuffer;
+    private GooseController controller;
+    private ByteArrayOutputStream outputBuffer;
 
     public void test() throws IOException {
         if (!Files.isDirectory(TEST_DIR)) {
@@ -87,7 +86,7 @@ public class Test {
 
     private void setup() {
         outputBuffer = new ByteArrayOutputStream();
-        out = new PrintStream(outputBuffer);
+        PrintStream out = new PrintStream(outputBuffer);
         GoosePresenter presenter = new GoosePresenter(out);
         GooseGame game = new GooseGame(presenter);
         controller = new GooseController(game, presenter);
