@@ -2,6 +2,7 @@ package com.sd.goose.io;
 
 import java.io.PrintStream;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.sd.goose.game.OutputBoundary;
@@ -9,7 +10,7 @@ import com.sd.goose.game.TileType;
 
 public class GoosePresenter implements OutputBoundary {
 
-    private StringBuilder currentLine = new StringBuilder();
+    private StringJoiner currentLine = new StringJoiner(". ");
     private final PrintStream out;
 
     public GoosePresenter() {
@@ -27,11 +28,7 @@ public class GoosePresenter implements OutputBoundary {
     @Override
     public void finalizeMove() {
         out.println(currentLine.toString());
-        currentLine = new StringBuilder();
-    }
-
-    private void addTerminalDot() {
-        currentLine.append(". ");
+        currentLine = new StringJoiner(". ");
     }
 
     @Override
@@ -41,22 +38,12 @@ public class GoosePresenter implements OutputBoundary {
 
     @Override
     public void roll(String player, int first, int second) {
-        currentLine
-                .append(player)
-                .append(" rolls ")
-                .append(first)
-                .append(", ")
-                .append(second);
+        currentLine.add(player + " rolls " + first + ", " + second);
     }
 
     @Override
     public void move(String player, Tile origin, Tile target) {
-        addTerminalDot();
-        currentLine.append(player)
-                .append(" moves from ")
-                .append(printTile(origin))
-                .append(" to ")
-                .append(printTile(target));
+        currentLine.add(player + " moves from " + printTile(origin) + " to " + printTile(target));
     }
 
     private String printTile(Tile tile) {
@@ -70,35 +57,22 @@ public class GoosePresenter implements OutputBoundary {
 
     @Override
     public void moveAgain(String player, Tile target) {
-        addTerminalDot();
-        currentLine.append(player)
-                .append(" moves again to ")
-                .append(printTile(target));
+        currentLine.add(player + " moves again to " + printTile(target));
     }
 
     @Override
     public void bounce(String player, Tile target) {
-        addTerminalDot();
-        currentLine.append(player)
-                .append(" bounces! ")
-                .append(player)
-                .append(" returns to ")
-                .append(printTile(target));
+        currentLine.add(player + " bounces! " + player + " returns to " + printTile(target));
     }
 
     @Override
     public void bridge(String player, Tile target) {
-        addTerminalDot();
-        currentLine.append(player)
-                .append(" jumps to ")
-                .append(printTile(target));
+        currentLine.add(player + " jumps to " + printTile(target));
     }
 
     @Override
     public void win(String player) {
-        addTerminalDot();
-        currentLine.append(player)
-                .append(" Wins!!");
+        currentLine.add(player + " Wins!!");
     }
 
 }
