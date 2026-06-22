@@ -4,8 +4,8 @@ public interface InputBoundary {
 
     void addPlayer(String name);
 
-    void rollAndMove(String player);
+    void rollAndExecuteTurn(String player);
 
-    void move(String player, DiceRoll roll);
+    void executeTurn(String player, DiceRoll roll);
 
 }

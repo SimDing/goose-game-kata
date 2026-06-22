@@ -30,54 +30,77 @@ public class GooseGame implements InputBoundary {
     }
 
     @Override
-    public void rollAndMove(String player) {
-        move(player, DiceRoll.roll());
+    public void rollAndExecuteTurn(String player) {
+        executeTurn(player, DiceRoll.roll());
     }
 
     @Override
-    public void move(String player, DiceRoll roll) {
-        int index = getPlayerIndex(player);
+    public void executeTurn(String player, DiceRoll roll) {
+        int playerId = getPlayerId(player);
         output.roll(player, roll.first(), roll.second());
-
-        int from = positions.get(index);
-        int result = roll.sum() + from;
-        output.move(player, createTileOutput(from), createTileOutput(result));
-
-        if (result == BRIDGE_START) {
-            result = BRIDGE_END;
-            output.bridge(player, createTileOutput(result));
-        }
-
-        while (isGooseTile(result)) {
-            result += roll.sum();
-            output.moveAgain(player, createTileOutput(result));
-        }
-
-        if (result > GOAL) {
-            int overshoot = result - GOAL;
-            result -= overshoot * 2;
-            output.bounce(player, createTileOutput(result));
-        }
-
-        if (result == GOAL) {
-            output.win(player);
-        }
-
-        positions.set(index, result);
+        int currentPosition = move(player, roll, playerId);
+        currentPosition = handleSpecialCases(player, currentPosition, roll);
+        positions.set(playerId, currentPosition);
         output.finalizeMove();
     }
 
-    public int getPosition(String player) {
-        int index = getPlayerIndex(player);
-        return positions.get(index);
-    }
-
-    private int getPlayerIndex(String player) {
-        int index = players.indexOf(player);
-        if (index < 0) {
+    private int getPlayerId(String player) {
+        int playerId = players.indexOf(player);
+        if (playerId < 0) {
             throw new IllegalArgumentException("Unknown Player");
         }
-        return index;
+        return playerId;
+    }
+
+    private int move(String player, DiceRoll roll, int playerId) {
+        int from = positions.get(playerId);
+        int result = roll.sum() + from;
+        output.move(player, createTileOutput(from), createTileOutput(result));
+        return result;
+    }
+
+    private int handleSpecialCases(String player, int currentPosition, DiceRoll roll) {
+        currentPosition = handleBridge(player, currentPosition);
+        currentPosition = handleGooseTiles(player, roll, currentPosition);
+        currentPosition = handleOvershoot(player, currentPosition);
+        handleGoal(player, currentPosition);
+        return currentPosition;
+    }
+
+    private int handleBridge(String player, int currentPosition) {
+        if (currentPosition == BRIDGE_START) {
+            currentPosition = BRIDGE_END;
+            output.bridge(player, createTileOutput(currentPosition));
+        }
+        return currentPosition;
+    }
+
+    private int handleGooseTiles(String player, DiceRoll roll, int currentPosition) {
+        while (isGooseTile(currentPosition)) {
+            currentPosition += roll.sum();
+            output.moveAgain(player, createTileOutput(currentPosition));
+        }
+        return currentPosition;
+    }
+
+    private int handleOvershoot(String player, int currentPosition) {
+        if (currentPosition > GOAL) {
+            int overshoot = currentPosition - GOAL;
+            currentPosition -= overshoot * 2;
+            output.bounce(player, createTileOutput(currentPosition));
+        }
+        return currentPosition;
+    }
+
+    private void handleGoal(String player, int currentPosition) {
+        if (currentPosition == GOAL) {
+            output.win(player);
+        }
+    }
+
+    public int getPosition(String player) {
+        int playerId = getPlayerId(player);
+        return positions.get(playerId);
     }
 
     private boolean isStartTile(int position) {
@@ -94,9 +117,12 @@ public class GooseGame implements InputBoundary {
 
     private TileOutput createTileOutput(int position) {
         position = Math.min(position, GOAL);
-        if (isStartTile(position)) return TileOutput.start();
-        if (isBridgeTile(position)) return TileOutput.bridge(position);
-        if (isGooseTile(position)) return TileOutput.goose(position);
+        if (isStartTile(position))
+            return TileOutput.start();
+        if (isBridgeTile(position))
+            return TileOutput.bridge(position);
+        if (isGooseTile(position))
+            return TileOutput.goose(position);
         return TileOutput.normal(position);
     }
 

@@ -36,7 +36,7 @@ public class GooseController {
         if (spaceIndex < 0) {
             String name = remainingLine;
             try {
-                gameBoundary.rollAndMove(name);
+                gameBoundary.rollAndExecuteTurn(name);
             } catch(IllegalArgumentException e) {
                 presenter.invalidName(name);
             }
@@ -47,7 +47,7 @@ public class GooseController {
             int[] parsedRolls = Arrays.asList(rolls).stream().map(String::trim).mapToInt(Integer::parseInt).toArray(); // TODO number format
             if (parsedRolls.length != 2) throw new RuntimeException();
             DiceRoll roll = new DiceRoll(parsedRolls[0], parsedRolls[1]); // TODO invalid numbers
-            gameBoundary.move(name, roll); // todo invalid name
+            gameBoundary.executeTurn(name, roll); // todo invalid name
         }
     }
 }
