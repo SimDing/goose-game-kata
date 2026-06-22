@@ -48,6 +48,37 @@ public class Test {
     private void runTestFile(Path testFile) throws IOException {
         setup();
 
+        GameLines gameLines = getInputAndOutputLines(testFile);
+        List<String> input = gameLines.inputLines();
+        List<String> expectedOutput = gameLines.outputLines();
+
+        for (int i = 0; i < input.size(); i++) {
+            checkTurn(testFile, input.get(i), expectedOutput.get(i));
+        }
+    }
+
+    private GameLines getInputAndOutputLines(Path testFile) throws IOException {
+        List<String> meaningfulLines = cleanLines(testFile);
+
+        List<String> inputLines = new ArrayList<>();
+        List<String> outputLines = new ArrayList<>();
+
+        for (int i = 0; i < meaningfulLines.size(); i++) {
+            if (i % 2 == 0) {
+                inputLines.add(meaningfulLines.get(i));
+            } else {
+                outputLines.add(meaningfulLines.get(i));
+            }
+        }
+
+        if (inputLines.size() != outputLines.size()) {
+            throw new AssertionError("Test file must contain alternating input/output lines (even count): " + testFile);
+        }
+
+        return new GameLines(inputLines, outputLines);
+    }
+
+    private List<String> cleanLines(Path testFile) throws IOException {
         List<String> lines = Files.readAllLines(testFile);
         List<String> meaningfulLines = new ArrayList<>();
         for (String line : lines) {
@@ -57,31 +88,25 @@ public class Test {
             }
             meaningfulLines.add(line);
         }
+        return meaningfulLines;
+    }
 
-        if (meaningfulLines.size() % 2 != 0) {
-            throw new AssertionError("Test file must contain alternating input/output lines (even count): " + testFile);
+    private void checkTurn(Path testFile, String input, String expectedOutput) throws AssertionError {
+        controller.processUserInput(input);
+
+        String actualOutput = outputBuffer.toString().replace("\r\n", "\n");
+        actualOutput = actualOutput.endsWith("\n")
+                ? actualOutput.substring(0, actualOutput.length() - 1)
+                : actualOutput;
+
+        if (!expectedOutput.equals(actualOutput)) {
+            throw new AssertionError("Mismatch in " + testFile
+                    + "\nInput: " + input
+                    + "\nExpected: " + expectedOutput
+                    + "\nActual:   " + actualOutput);
         }
 
-        for (int i = 0; i < meaningfulLines.size(); i += 2) {
-            String input = meaningfulLines.get(i);
-            String expectedOutput = meaningfulLines.get(i + 1);
-
-            controller.processUserInput(input);
-
-            String actualOutput = outputBuffer.toString().replace("\r\n", "\n");
-            actualOutput = actualOutput.endsWith("\n")
-                    ? actualOutput.substring(0, actualOutput.length() - 1)
-                    : actualOutput;
-
-            if (!expectedOutput.equals(actualOutput)) {
-                throw new AssertionError("Mismatch in " + testFile + " at pair " + ((i / 2) + 1)
-                        + "\nInput: " + input
-                        + "\nExpected: " + expectedOutput
-                        + "\nActual:   " + actualOutput);
-            }
-
-            outputBuffer.reset();
-        }
+        outputBuffer.reset();
     }
 
     private void setup() {
@@ -91,5 +116,9 @@ public class Test {
         GooseGame game = new GooseGame(presenter);
         controller = new GooseController(game, presenter);
     }
-}
 
+    private record GameLines(
+            List<String> inputLines,
+            List<String> outputLines) {
+    }
+}
