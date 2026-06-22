@@ -1,4 +1,4 @@
-# Test running into many geese 
+# Test running into many goose fields
 add player GeeseStomper
 players: GeeseStomper
 move GeeseStomper 1,3
